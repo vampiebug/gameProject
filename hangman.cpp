@@ -1,0 +1,226 @@
+#include "hangman.hpp"
+#include "consoledraw.hpp"
+
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <random>
+
+Hangman::Hangman( ) : Game( ){
+
+    std::cout << "Constructor for Hangman!" << std::endl;
+
+    // read the old scoreboard file here (NEED TO IMPLEMENT - TODO same as in guess.cpp)
+	// populate the game's scoreboard object
+    
+
+}
+
+// destructor
+Hangman::~Hangman( )
+{
+	std::cout << "Destructor for Hangman!" << std::endl;
+	// nothing to delete
+}
+
+// we don't use this one but it's part of the interface so we have to implement it
+void Hangman::getInput()
+{
+	return;
+}
+
+// needs to be implemented as part of the first task - TODO~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// add scores to the record after each round. A score should only be added if it represents top-10 performance. 
+// In the case of the Guess game, a lower number of guesses is better
+bool Hangman::addScore( HighScore newScore )
+{
+
+	return false;
+}
+
+// reset the game to the initial state
+void Hangman::resetGame( ){
+	// seed the time to the random library
+	std::srand(std::time(nullptr));
+	
+    //Randomly pick a word from the word list and set it as the magic word
+    srand ( time(NULL) ); //creates seed https://cplusplus.com/forum/beginner/26611/ 
+    int RandIndex = rand() % 10; //generates a random number between 0 and 9
+
+    this->magic_word = word_list[RandIndex];
+
+	// reset number of guesses and board min/max
+	this->num_guesses = 0;
+
+}
+
+// draw the board on the screen in its current state
+void Hangman::drawBoard(){
+    const int width = 60; // total characters for the line
+    const std::string ORN = "\x1b[38;5;202m";
+    const std::string RESET = "\033[0m";
+
+    // Compute the scale factor
+    int range = GUESS_MAX - GUESS_MIN;
+    if (range <= 0){
+        std::cerr << "Invalid range.\n";
+        return;
+    }
+
+    // Build the gallow
+    if (num_guesses == 0){ // To initialize the gallow
+        std::cout << "####################" << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "      _______       " << std::endl;
+        std::cout << "      |/     |      " << std::endl;
+        std::cout << "      |      O      " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "    __|___          " << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "####################" << std::endl;
+    }
+    
+    //Update gallow to add sequential limb
+    else if(num_guesses == 1){
+        //print out gallow with new body part
+        std::cout << "####################" << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "      _______       " << std::endl;
+        std::cout << "      |/     |      " << std::endl;
+        std::cout << "      |     (_)      " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "    __|___          " << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "####################" << std::endl;
+    }
+    else if(num_guesses == 2){
+        //print out gallow with new body part
+        std::cout << "####################" << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "      _______       " << std::endl;
+        std::cout << "      |/     |      " << std::endl;
+        std::cout << "      |     (_)     " << std::endl;
+        std::cout << "      |      |      " << std::endl;
+        std::cout << "      |      |      " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "    __|___          " << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "####################" << std::endl;
+    }
+    else if(num_guesses == 3){
+        //print out gallow with new body part
+        std::cout << "####################" << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "      _______       " << std::endl;
+        std::cout << "      |/     |      " << std::endl;
+        std::cout << "      |     (_)     " << std::endl;
+        std::cout << "      |     /|      " << std::endl;
+        std::cout << "      |      |      " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "    __|___          " << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "####################" << std::endl;
+    }
+    else if(num_guesses == 4){
+        //print out gallow with new body part
+        std::cout << "####################" << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "      _______       " << std::endl;
+        std::cout << "      |/     |      " << std::endl;
+        std::cout << "      |     (_)     " << std::endl;
+        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |      |      " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "    __|___          " << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "####################" << std::endl;
+    }
+    else if(num_guesses == 5){
+        //print out gallow with new body part
+        std::cout << "####################" << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "      _______       " << std::endl;
+        std::cout << "      |/     |      " << std::endl;
+        std::cout << "      |     (_)     " << std::endl;
+        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |      |      " << std::endl;
+        std::cout << "      |     /       " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "    __|___          " << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "####################" << std::endl;
+    }
+    else if(num_guesses == 6){
+        //print out gallow with new body part
+        std::cout << "####################" << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "      _______       " << std::endl;
+        std::cout << "      |/     |      " << std::endl;
+        std::cout << "      |     (_)     " << std::endl;
+        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |      |      " << std::endl;
+        std::cout << "      |     / \     " << std::endl;
+        std::cout << "      |             " << std::endl;
+        std::cout << "    __|___          " << std::endl;
+        std::cout << "                    " << std::endl;
+        std::cout << "####################" << std::endl;
+
+    }
+
+    // Check if any letters have been correctly guessed and print out word line
+    for (int i = 0; i < magic_word.length(); ++i) {
+        char letter = magic_word[i];
+        char guess_letter = user_guess[i];
+        if (letter == guess_letter){
+            std::cout << letter;
+        }
+        else{
+            std::cout << "_";
+        }
+    }
+    std::cout << std::endl;
+
+}
+
+// handles the entire process of playing a single game
+int Hangman::play( const Player& player )
+{
+	// make sure everything is initialized
+	this->resetGame();
+
+	user_guess = "";
+	while( user_guess != this->magic_word ) // While the player has made an incorrect guess, update board and continue playing
+	{
+		// clear the screen
+		resetScreen();
+		std::cout << "Guess a letter to get the correct word!" << std::endl;
+
+		// draw the board on the screen
+		this->drawBoard();
+
+		// ask the user for a guess and get it
+		std::cout << "Enter your guess (between A - Z): "; //Should we give vowels to the player when they start playing?
+		std::cin >> user_guess;
+
+    }
+
+    // celebrate and output the amount of guesses required
+	std::cout << "Good job! You figured out the word after only "
+		  << this->num_guesses
+		  << " guesses!"
+		  << std::endl
+	;
+
+    return 0;
+
+}
