@@ -227,7 +227,7 @@ int Hangman::play( const Player& player )
 
         // Checks if the user hit their max amount of guesses
         if( num_guesses == GUESS_MAX_HANG){
-            user_guess = this->magic_word;
+            guesses_string = this->magic_word;
         }
 
 		// ask the user for a guess and get it
@@ -236,12 +236,21 @@ int Hangman::play( const Player& player )
 
     }
 
-    // output the amount of guesses required
-	std::cout << "Good job! You finished after only "
+    if( num_guesses<GUESS_MAX_HANG){
+        // celebration and output the amount of guesses required
+	std::cout << "Good job! You guessed the word after only "
 		  << this->num_guesses
 		  << " guesses!"
 		  << std::endl
 	;
+    } else {
+        // Sadness and output the amount of guesses required
+	    std::cout << "Too bad  :(  You finished after "
+		      << this->num_guesses
+		      << " guesses!"
+		      << std::endl
+	    ;
+    }
 
     return 0;
 
