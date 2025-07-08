@@ -5,7 +5,7 @@
 #define GUESS_MAX_HANG 6 // for the total limbs that the hanged man has
 
 #include "game.hpp"
-#include <vector>
+#include <deque>
 
 // create a class Guess that inherits the class Game (so Guess is a type of Game)
 class Hangman : public Game {
@@ -18,7 +18,11 @@ private: // these variables and functions are only available to class members (a
 	int board_max;		// maximum incorrect guess
     std::string word_list[10] = {"EXTRAORDINARY", "DISAPPOINTMENT", "CAFFEINE", "MICHIGAN", "WOLVERINE", "DETROIT",
          "SIGMA", "INTELLECTUAL", "ROBOTICS", "GRASS"}; // an assortment of words to guess from
-	std::vector<std::string> guesses;
+	//std::vector<std::string> guesses;
+	std::deque<std::string> guesses;
+	std::string guesses_string;
+	int correct_letter;
+	int guess_total;
 	void updateScoreboard();
 	void askPlayAgain();
 
