@@ -6,6 +6,8 @@
 #include <ctime>
 #include <fstream>
 #include <random>
+#include <vector>
+#include <algorithm>
 
 Hangman::Hangman( ) : Game( ){
 
@@ -170,16 +172,27 @@ void Hangman::drawBoard(){
 
     }
 
+    int correct_guess = 0;
+    
     // Check if any letters have been correctly guessed and print out word line
-    for (size_t i = 0; i < magic_word.length(); ++i) {
+    for (size_t i = 0; i < this->magic_word.length(); ++i) {
         char letter = magic_word[i];
         char guess_letter = user_guess[i];
         if (letter == guess_letter){
-            std::cout << letter;
+            guesses[i] = letter;
+            ++correct_guess;
+            
         }
-        else{
-            std::cout << "_";
-        }
+        
+    }
+
+    for(size_t i=0; i<guesses.size(); ++i){
+        std::cout<< guesses[i];
+    }
+    std::cout<< std::endl;
+
+    if( correct_guess == 0){
+        num_guesses = num_guesses+1;
     }
     std::cout << std::endl;
 
@@ -192,7 +205,18 @@ int Hangman::play( const Player& player )
 	this->resetGame();
 
 	user_guess = "";
-	while( user_guess != this->magic_word ) // While the player has made an incorrect guess, update board and continue playing
+
+    for( size_t i=0; i<this->magic_word.size();++i){
+        guesses[i]="_";
+    }
+
+    std::string guesses_string = "";
+
+    for (int i =0; i < 5; i++){
+        guesses_string += guesses[i];
+    }
+
+	while( this->magic_word != guesses_string ) // While the player has made an incorrect guess, update board and continue playing
 	{
 		// clear the screen
 		resetScreen();
@@ -202,11 +226,9 @@ int Hangman::play( const Player& player )
 		this->drawBoard();
 
         // Checks if the user hit their max amount of guesses
-        if( num_guesses==GUESS_MAX_HANG){
-            user_guess == this->magic_word;
+        if( num_guesses == GUESS_MAX_HANG){
+            user_guess = this->magic_word;
         }
-
-        ++num_guesses;
 
 		// ask the user for a guess and get it
 		std::cout << "Enter your guess (between A - Z): "; //Should we give vowels to the player when they start playing?
