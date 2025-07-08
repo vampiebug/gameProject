@@ -7,7 +7,7 @@
 #include <fstream>
 #include <random>
 #include <vector>
-#include <algorithm>
+#include <iterator>
 
 Hangman::Hangman( ) : Game( ){
 
@@ -55,6 +55,9 @@ void Hangman::resetGame( ){
 	// reset number of guesses and board min/max
 	this->num_guesses = 0;
 
+    for(size_t i = 0; i < this->magic_word.size(); i++){
+        guesses[i] = "_";
+    }
 }
 
 // draw the board on the screen in its current state
@@ -175,7 +178,7 @@ void Hangman::drawBoard(){
     int correct_guess = 0;
     
     // Check if any letters have been correctly guessed and print out word line
-    for (size_t i = 0; i < this->magic_word.length(); ++i) {
+    for (size_t i = 0; i < this->magic_word.size(); ++i) {
         char letter = magic_word[i];
         char guess_letter = user_guess[i];
         if (letter == guess_letter){
@@ -186,7 +189,7 @@ void Hangman::drawBoard(){
         
     }
 
-    for(size_t i=0; i<guesses.size(); ++i){
+    for(size_t i=0; i<this->magic_word.size(); ++i){
         std::cout<< guesses[i];
     }
     std::cout<< std::endl;
@@ -205,10 +208,6 @@ int Hangman::play( const Player& player )
 	this->resetGame();
 
 	user_guess = "";
-
-    for( size_t i=0; i<this->magic_word.size();++i){
-        guesses[i]="_";
-    }
 
     std::string guesses_string = "";
 
@@ -236,7 +235,7 @@ int Hangman::play( const Player& player )
 
     }
 
-    if( num_guesses<GUESS_MAX_HANG){
+    if( num_guesses < GUESS_MAX_HANG){
         // celebration and output the amount of guesses required
 	std::cout << "Good job! You guessed the word after only "
 		  << this->num_guesses
