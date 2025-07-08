@@ -2,7 +2,7 @@
 #define HANGMAN_HPP	// if it does not already recognize it, then we can define it
 
 #define GUESS_MIN 1		// mininum of the magic number distribution
-#define GUESS_MAX 6 // for the total limbs that the hanged man has
+#define GUESS_MAX_HANG 6 // for the total limbs that the hanged man has
 
 #include "game.hpp"
 

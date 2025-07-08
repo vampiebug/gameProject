@@ -57,16 +57,9 @@ void Hangman::resetGame( ){
 
 // draw the board on the screen in its current state
 void Hangman::drawBoard(){
-    const int width = 60; // total characters for the line
+    
     const std::string ORN = "\x1b[38;5;202m";
     const std::string RESET = "\033[0m";
-
-    // Compute the scale factor
-    int range = GUESS_MAX - GUESS_MIN;
-    if (range <= 0){
-        std::cerr << "Invalid range.\n";
-        return;
-    }
 
     // Build the gallow
     if (num_guesses == 0){ // To initialize the gallow
@@ -137,7 +130,7 @@ void Hangman::drawBoard(){
         std::cout << "      _______       " << std::endl;
         std::cout << "      |/     |      " << std::endl;
         std::cout << "      |     (_)     " << std::endl;
-        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |     /|>     " << std::endl;
         std::cout << "      |      |      " << std::endl;
         std::cout << "      |             " << std::endl;
         std::cout << "      |             " << std::endl;
@@ -152,7 +145,7 @@ void Hangman::drawBoard(){
         std::cout << "      _______       " << std::endl;
         std::cout << "      |/     |      " << std::endl;
         std::cout << "      |     (_)     " << std::endl;
-        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |     /|>     " << std::endl;
         std::cout << "      |      |      " << std::endl;
         std::cout << "      |     /       " << std::endl;
         std::cout << "      |             " << std::endl;
@@ -160,16 +153,16 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 6){
+    else if(num_guesses == GUESS_MAX_HANG){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
         std::cout << "      _______       " << std::endl;
         std::cout << "      |/     |      " << std::endl;
         std::cout << "      |     (_)     " << std::endl;
-        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |     /|>     " << std::endl;
         std::cout << "      |      |      " << std::endl;
-        std::cout << "      |     / \     " << std::endl;
+        std::cout << "      |     / |     " << std::endl;
         std::cout << "      |             " << std::endl;
         std::cout << "    __|___          " << std::endl;
         std::cout << "                    " << std::endl;
@@ -178,7 +171,7 @@ void Hangman::drawBoard(){
     }
 
     // Check if any letters have been correctly guessed and print out word line
-    for (int i = 0; i < magic_word.length(); ++i) {
+    for (size_t i = 0; i < magic_word.length(); ++i) {
         char letter = magic_word[i];
         char guess_letter = user_guess[i];
         if (letter == guess_letter){
@@ -208,14 +201,21 @@ int Hangman::play( const Player& player )
 		// draw the board on the screen
 		this->drawBoard();
 
+        // Checks if the user hit their max amount of guesses
+        if( num_guesses==GUESS_MAX_HANG){
+            user_guess == this->magic_word;
+        }
+
+        ++num_guesses;
+
 		// ask the user for a guess and get it
 		std::cout << "Enter your guess (between A - Z): "; //Should we give vowels to the player when they start playing?
 		std::cin >> user_guess;
 
     }
 
-    // celebrate and output the amount of guesses required
-	std::cout << "Good job! You figured out the word after only "
+    // output the amount of guesses required
+	std::cout << "Good job! You finished after only "
 		  << this->num_guesses
 		  << " guesses!"
 		  << std::endl
