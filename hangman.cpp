@@ -68,7 +68,7 @@ void Hangman::drawBoard(){
     const std::string RESET = "\033[0m";
 
     // Build the gallow
-    if (num_guesses == 0){ // To initialize the gallow
+    if (this->num_guesses == 0){ // To initialize the gallow
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
         std::cout << "      _______       " << std::endl;
@@ -84,7 +84,7 @@ void Hangman::drawBoard(){
     }
     
     //Update gallow to add sequential limb
-    else if(num_guesses == 1){
+    else if(this->num_guesses == 1){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -99,7 +99,7 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 2){
+    else if(this->num_guesses == 2){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -114,7 +114,7 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 3){
+    else if(this->num_guesses == 3){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -129,7 +129,7 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 4){
+    else if(this->num_guesses == 4){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -144,7 +144,7 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 5){
+    else if(this->num_guesses == 5){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -159,7 +159,7 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == GUESS_MAX_HANG){
+    else if(this->num_guesses == GUESS_MAX_HANG){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -197,11 +197,11 @@ void Hangman::drawBoard(){
     std::cout<< std::endl;
 
     if( correct_guess == 0){
-        num_guesses = num_guesses+1;
+        this->num_guesses = this->num_guesses+1;
     }
 
     guesses_string = "";
-    for (int i =0; i < guesses.size(); i++){
+    for (size_t i =0; i < guesses.size(); i++){
         guesses_string += guesses[i];
     }
 
@@ -217,7 +217,7 @@ int Hangman::play( const Player& player )
 	{
 		// clear the screen
 		resetScreen();
-		std::cout << "Guess a letter to get the correct word!" << std::endl;
+		std::cout << "Guess one letter to get the correct word! Type 'done' when you've guessed each letter and finished the word!" << std::endl;
 
 		// draw the board on the screen
 		this->drawBoard();
@@ -227,9 +227,6 @@ int Hangman::play( const Player& player )
             guesses_string = this->magic_word;
         }
 
-        if( correct_letter == this->magic_word.size()){
-            guesses_string = this->magic_word;
-        }
 
         user_guess = "";
 		// ask the user for a guess and get it
@@ -237,6 +234,10 @@ int Hangman::play( const Player& player )
 		std::cin >> user_guess;
 
         guess_total = guess_total+1;
+
+        if( static_cast<size_t>(correct_letter) == this->magic_word.size()){
+            guesses_string = this->magic_word;
+        }
 
     }
 
@@ -256,6 +257,7 @@ int Hangman::play( const Player& player )
 	    ;
     }
     std::cout << "The answer was: " << this->magic_word << std::endl;
+    std::cout << "Total incorrect guesses: " << num_guesses - 1 << std::endl;
 
     return 0;
 
