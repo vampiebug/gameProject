@@ -186,26 +186,37 @@ int Mastermind::play( const Player& player )
             if (playerTracker->data == cpuTracker->data){
                 std::cout << cpuTracker->data;
                 ++correct_guesses;
+                //break out of this iteration and update if reach print
+                playerTracker = playerTracker->traverseDown();
+                cpuTracker = cpuTracker->traverseDown();
+                continue;
             }
-            //prints an asterisk if the player's guess matches the next or previous member of the cpu. Causing problems because can't access the data of a nullptr
-            // else if (playerTracker->data == cpuTracker->traverseUp()->data || playerTracker->data == cpuTracker->traverseDown()->data){
-            //     std::cout<<"*";
-            // }
-            else if (cpuTracker->traverseDown()!=nullptr){
-                if (playerTracker->data == cpuTracker->traverseDown()->data){
-                    std::cout<<"*";
-                }
-            }
-            else if (cpuTracker->traverseUp()!=nullptr){
+            //otherwise:
+            //if the previous cpu data is safe to access and its data matches the current player guess, output an asterisk.
+            if (playerTracker->traverseUp() != nullptr){
                 if (playerTracker->data == cpuTracker->traverseUp()->data){
                     std::cout<<"*";
+                    //break out of this iteration and update if reach print
+                    playerTracker = playerTracker->traverseDown();
+                    cpuTracker = cpuTracker->traverseDown(); 
+                    continue;
                 }
             }
-            else {
-                std::cout << "X";
+            //if the prior cpu data is safe to access and its data matches the current player guess, output an asterisk.
+            //will have ended the iteration if already printed, so can use if instead of else if.
+            if (playerTracker->traverseDown() != nullptr){
+                if (playerTracker->data == cpuTracker->traverseDown()->data){
+                    std::cout<<"*";
+                    //break out of this iteration and update if reach print
+                    playerTracker = playerTracker->traverseDown();
+                    cpuTracker = cpuTracker->traverseDown(); 
+                    continue;
+                }
             }
+            //if it's still in the loop, there is no match. Print x and increment.
+            std::cout<<"X";
             playerTracker = playerTracker->traverseDown();
-            cpuTracker = cpuTracker->traverseDown();
+            cpuTracker = cpuTracker->traverseDown(); 
         }
         //Check if a node matches, will print out their response if so. If doesnt match, prints an 'X'
         // for(int i=0; i<3; ++i){
