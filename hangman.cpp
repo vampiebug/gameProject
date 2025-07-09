@@ -176,6 +176,7 @@ void Hangman::drawBoard(){
 
     }
 
+    // need to reset if the guess was correct this time
     int correct_guess = 0;
     
     // Check if any letters have been correctly guessed and print out word line
@@ -191,15 +192,18 @@ void Hangman::drawBoard(){
         
     }
 
+    // outputs all of the correct letters and placeholders for letters to be guessed
     for(size_t i=0; i<this->magic_word.size(); ++i){
         std::cout<< guesses[i];
     }
     std::cout<< std::endl;
 
+    // counts if an incorrect guess was made, since no correct guess was made
     if( correct_guess == 0){
         this->num_guesses = this->num_guesses+1;
     }
 
+    // assembles a string word from the deque storing all the user's guesses
     guesses_string = "";
     for (size_t i =0; i < guesses.size(); i++){
         guesses_string += guesses[i];
@@ -228,13 +232,15 @@ int Hangman::play( const Player& player )
         }
 
 
-        user_guess = "";
+        user_guess = ""; // reset the storage for the user's guess
 		// ask the user for a guess and get it
 		std::cout << "Enter your guess (between A - Z): "; //Should we give vowels to the player when they start playing?
 		std::cin >> user_guess;
 
+        // counts the total number of guesses made overall in the game
         guess_total = guess_total+1;
 
+        // Checks if the player guessed all of the letters in the magic word correctly, ends the game if so
         if( static_cast<size_t>(correct_letter) == this->magic_word.size()){
             guesses_string = this->magic_word;
         }
@@ -256,6 +262,8 @@ int Hangman::play( const Player& player )
 		      << std::endl
 	    ;
     }
+
+    // message outputting the total number of incorrect guesses made in one game
     std::cout << "The answer was: " << this->magic_word << std::endl;
     std::cout << "Total incorrect guesses: " << num_guesses - 1 << std::endl;
 
