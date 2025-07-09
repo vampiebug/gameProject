@@ -4,7 +4,7 @@
 // minimize the amount of imports you have here, because this file might be included in a bunch
 // of other files that don't need all of the included files for the implementation of this class
 #include "game.hpp" 	// the Guess object inherits the Game object, so we need its header file
-#include "block.hpp" //should inherit from 
+#include "tower.hpp" //should inherit from 
 
 
 // define some MACROS 
@@ -15,12 +15,12 @@
 class Mastermind : public Game {
 
 private: // these variables and functions are only available to class members (and friends)
-	//these are the first blocks in the lists for the cpu and the player.
-	Block cpuFirst;
-	Block playerBlocksFirst;
-	//these are the block trackers for the cpu and the player
+	//these are the first blocks in the lists for the cpu and the player. 
+	Tower playerTower;
+	Tower cpuTower;
+	//these are the block trackers for the cpu and the player. Used for iterating through the lists
 	Block* cpuTracker;
-	Block* playerBlocksTracker;
+	Block* playerTracker;
 
 	std::string guess; //this is the string used to take input for the user's individual number guesses.
     bool user_guess;    // Becomes true when the user correctly guesses the board.
