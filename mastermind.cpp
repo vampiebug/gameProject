@@ -47,17 +47,15 @@ void Mastermind::resetGame( )
 
     //I think this should do the same as your for-loop below. Also, the game seems very scalable--maybe we can do that if we have time?
     //create a new block with a random data value as the first in the list.
-    cpuFirst = Block(rand() %5+1);
-    //assign the tracker to the address of the first
-    cpuTracker = &cpuFirst;
+    cpuTower = Tower(rand() %5+1);
+    //assign the tracker to the address of the first (REMOVED)
+    //cpuTracker = &cpuFirst;
     //assign the next ones
     for (int i = 0; i<2; i++){
-        //Assign the next pointer of the tracker block to a new block with a random data value (use the tracker to access). Also set the tracker to the new block.
-        cpuTracker->nextBlock = new Block(rand() %5+1);
-        //reassign the tracker to the block just defined
-        cpuTracker = cpuTracker->nextBlock;
+        cpuTower.addToEnd(new Block(rand() %5+1));
     }
-    //probably need to reset cpuTracker.
+
+
      
     // for (int i = 1; i <= 3; i++) {
     //     Cpu* newNodeCPU = new Cpu();
@@ -119,8 +117,8 @@ int Mastermind::play( const Player& player )
 	std::cout << "Welcome to Mastermind! Guess the combination of 3 digits (may repeat) between 1 - 6" << std::endl;
 	while( user_guess != true )
 	{
-		// clear the screen
-		resetScreen();
+		// clear the screen --note: this causes some issues, as it hides the previous guess before it can be seen
+		//resetScreen();
 		std::cout << "Guess the number combination!" << std::endl;
 
 		// draw the board on the screen
@@ -133,18 +131,24 @@ int Mastermind::play( const Player& player )
 
 
 
-        //basically works the same as in the reset except takes user input
+        //basically works the same as in the reset except takes user input. Need to clean this to make sure it's an int.
         std::cin >> guess;
-        playerBlocksFirst = Block(stoi(guess));
-        //assign the tracker to the address of the first
-        playerBlocksTracker = &playerBlocksFirst;
+        playerTower = Tower(stoi(guess));
+        //assign the tracker to the address of the first REMOVED
+        //playerBlocksTracker = &playerBlocksFirst;
         for (int i = 0; i < 2; i++){
+            // ask the user for a guess and get it
+		    std::cout << "Enter your guess (between " << this->board_min << " and " << this->board_max << "): ";
             std::cin >> guess;
             //implement getInput and checking to make sure the input is in fact an int within range here
-            playerBlocksTracker->nextBlock = new Block(std::stoi(guess));
-            playerBlocksTracker = playerBlocksTracker->nextBlock;
+            playerTower.addToEnd(new Block(stoi(guess)));
         }
-        
+        std::cout<<cpuTower.startBlock->data<<std::endl;
+        std::cout<<cpuTower.startBlock->traverseDown()->data<<std::endl;
+        std::cout<<cpuTower.startBlock->traverseDown()->traverseDown()->data<<std::endl;
+        std::cout<<playerTower.startBlock->data<<std::endl;
+        std::cout<<playerTower.startBlock->traverseDown()->data<<std::endl;
+        std::cout<<playerTower.startBlock->traverseDown()->traverseDown()->data<<std::endl;
 
         // // Initialize the head of the list
         // Pu* headPU = nullptr;
@@ -169,19 +173,39 @@ int Mastermind::play( const Player& player )
         // }
         
         int correct_guesses = 0;
-        //probably need to reset both trackers back to the head.
-        playerBlocksTracker = &playerBlocksFirst;
-        cpuTracker = &cpuFirst;
+        //probably need to reset both trackers back to the head. REMOVED
+        // playerBlocksTracker = &playerBlocksFirst;
+        // cpuTracker = &cpuFirst;
+
+        //need to reset the trackers before looping. See if there's a better way to do this. Maybe make the trackers part of the towers?
+        playerTracker = playerTower.startBlock;
+        cpuTracker = cpuTower.startBlock;
 
         //On the last loop, playerBlocksTracker will be set equal to the next block for the last block in the list, which is nullptr.
-        while (playerBlocksTracker != nullptr){
-            if (playerBlocksTracker->data == cpuTracker->data){
-                std::cout << cpuTracker->data << std::endl;
+        while (playerTracker != nullptr){
+            if (playerTracker->data == cpuTracker->data){
+                std::cout << cpuTracker->data;
                 ++correct_guesses;
             }
-            else if (playerBlocksTracker->data == cpuTracker->data){
+            //prints an asterisk if the player's guess matches the next or previous member of the cpu. Causing problems because can't access the data of a nullptr
+            // else if (playerTracker->data == cpuTracker->traverseUp()->data || playerTracker->data == cpuTracker->traverseDown()->data){
+            //     std::cout<<"*";
+            // }
+            else if (cpuTracker->traverseDown()!=nullptr){
+                if (playerTracker->data == cpuTracker->traverseDown()->data){
+                    std::cout<<"*";
+                }
+            }
+            else if (cpuTracker->traverseUp()!=nullptr){
+                if (playerTracker->data == cpuTracker->traverseUp()->data){
+                    std::cout<<"*";
+                }
+            }
+            else {
                 std::cout << "X";
             }
+            playerTracker = playerTracker->traverseDown();
+            cpuTracker = cpuTracker->traverseDown();
         }
         //Check if a node matches, will print out their response if so. If doesnt match, prints an 'X'
         // for(int i=0; i<3; ++i){
