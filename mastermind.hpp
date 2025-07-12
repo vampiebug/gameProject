@@ -9,7 +9,7 @@
 
 // define some MACROS 
 #define GUESS_MIN 1		// mininum of the magic number distribution
-#define GUESS_MAX 6		// maximum of the magic number distribution
+#define GUESS_MAX_MIND 6		// maximum of the magic number distribution
 
 // create a class Guess that inherits the class Game (so Guess is a type of Game)
 class Mastermind : public Game {

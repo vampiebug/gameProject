@@ -6,6 +6,8 @@
 #include <ctime>
 #include <fstream>
 #include <random>
+#include <vector>
+#include <iterator>
 
 Hangman::Hangman( ) : Game( ){
 	
@@ -138,24 +140,21 @@ void Hangman::resetGame( ){
 
 	// reset number of guesses and board min/max
 	this->num_guesses = 0;
+    this->guess_total=0;
 
+    for(size_t i = 0; i < this->magic_word.size(); i++){
+        guesses[i] = "_";
+    }
 }
 
 // draw the board on the screen in its current state
 void Hangman::drawBoard(){
-    const int width = 60; // total characters for the line
+    
     const std::string ORN = "\x1b[38;5;202m";
     const std::string RESET = "\033[0m";
 
-    // Compute the scale factor
-    int range = GUESS_MAX - GUESS_MIN;
-    if (range <= 0){
-        std::cerr << "Invalid range.\n";
-        return;
-    }
-
     // Build the gallow
-    if (num_guesses == 0){ // To initialize the gallow
+    if (this->num_guesses == 0){ // To initialize the gallow
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
         std::cout << "      _______       " << std::endl;
@@ -171,7 +170,7 @@ void Hangman::drawBoard(){
     }
     
     //Update gallow to add sequential limb
-    else if(num_guesses == 1){
+    else if(this->num_guesses == 1){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -186,7 +185,7 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 2){
+    else if(this->num_guesses == 2){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -201,7 +200,7 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 3){
+    else if(this->num_guesses == 3){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
@@ -216,14 +215,14 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 4){
+    else if(this->num_guesses == 4){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
         std::cout << "      _______       " << std::endl;
         std::cout << "      |/     |      " << std::endl;
         std::cout << "      |     (_)     " << std::endl;
-        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |     /|>     " << std::endl;
         std::cout << "      |      |      " << std::endl;
         std::cout << "      |             " << std::endl;
         std::cout << "      |             " << std::endl;
@@ -231,14 +230,14 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 5){
+    else if(this->num_guesses == 5){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
         std::cout << "      _______       " << std::endl;
         std::cout << "      |/     |      " << std::endl;
         std::cout << "      |     (_)     " << std::endl;
-        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |     /|>     " << std::endl;
         std::cout << "      |      |      " << std::endl;
         std::cout << "      |     /       " << std::endl;
         std::cout << "      |             " << std::endl;
@@ -246,16 +245,16 @@ void Hangman::drawBoard(){
         std::cout << "                    " << std::endl;
         std::cout << "####################" << std::endl;
     }
-    else if(num_guesses == 6){
+    else if(this->num_guesses == GUESS_MAX_HANG){
         //print out gallow with new body part
         std::cout << "####################" << std::endl;
         std::cout << "                    " << std::endl;
         std::cout << "      _______       " << std::endl;
         std::cout << "      |/     |      " << std::endl;
         std::cout << "      |     (_)     " << std::endl;
-        std::cout << "      |     /|\     " << std::endl;
+        std::cout << "      |     /|>     " << std::endl;
         std::cout << "      |      |      " << std::endl;
-        std::cout << "      |     / \     " << std::endl;
+        std::cout << "      |     / |     " << std::endl;
         std::cout << "      |             " << std::endl;
         std::cout << "    __|___          " << std::endl;
         std::cout << "                    " << std::endl;
@@ -263,18 +262,38 @@ void Hangman::drawBoard(){
 
     }
 
+    // need to reset if the guess was correct this time
+    int correct_guess = 0;
+    
     // Check if any letters have been correctly guessed and print out word line
-    for (int i = 0; i < magic_word.length(); ++i) {
+    for (size_t i = 0; i < this->magic_word.size(); ++i) {
         char letter = magic_word[i];
-        char guess_letter = user_guess[i];
+        char guess_letter = user_guess[0];
         if (letter == guess_letter){
-            std::cout << letter;
+            guesses[i] = letter;
+            correct_guess = correct_guess+1;
+            correct_letter = correct_letter+1;
+            
         }
-        else{
-            std::cout << "_";
-        }
+        
     }
-    std::cout << std::endl;
+
+    // outputs all of the correct letters and placeholders for letters to be guessed
+    for(size_t i=0; i<this->magic_word.size(); ++i){
+        std::cout<< guesses[i];
+    }
+    std::cout<< std::endl;
+
+    // counts if an incorrect guess was made, since no correct guess was made
+    if( correct_guess == 0){
+        this->num_guesses = this->num_guesses+1;
+    }
+
+    // assembles a string word from the deque storing all the user's guesses
+    guesses_string = "";
+    for (size_t i =0; i < guesses.size(); i++){
+        guesses_string += guesses[i];
+    }
 
 }
 
@@ -284,33 +303,56 @@ int Hangman::play( const Player& player )
 	// make sure everything is initialized
 	this->resetGame();
 
-	user_guess = "";
-	while( user_guess != this->magic_word ) // While the player has made an incorrect guess, update board and continue playing
+	while( this->magic_word != guesses_string ) // While the player has made an incorrect guess, update board and continue playing
 	{
 		// clear the screen
 		resetScreen();
-		std::cout << "Guess a letter to get the correct word!" << std::endl;
+		std::cout << "Guess one letter to get the correct word! Type 'done' when you've guessed each letter and finished the word!" << std::endl;
 
 		// draw the board on the screen
 		this->drawBoard();
 
-        //test comments:
+        // Checks if the user hit their max amount of guesses
+        if( num_guesses == GUESS_MAX_HANG){
+            guesses_string = this->magic_word;
+        }
 
-        std::cout<<this->magic_word<<std::endl;
-        std::cout<<this->user_guess<<std::endl;
+
+        user_guess = ""; // reset the storage for the user's guess
 		// ask the user for a guess and get it
 		std::cout << "Enter your guess (between A - Z): "; //Should we give vowels to the player when they start playing?
 		std::cin >> user_guess;
 
+        // counts the total number of guesses made overall in the game
+        guess_total = guess_total+1;
+
+        // Checks if the player guessed all of the letters in the magic word correctly, ends the game if so
+        if( static_cast<size_t>(correct_letter) == this->magic_word.size()){
+            guesses_string = this->magic_word;
+        }
+
     }
 
-    // celebrate and output the amount of guesses required
-	std::cout << "Good job! You figured out the word after only "
-		  << this->num_guesses
+    if( num_guesses < GUESS_MAX_HANG){
+        // celebration and output the amount of guesses required
+	std::cout << "Good job! You guessed the word after only "
+		  << (guess_total)
 		  << " guesses!"
 		  << std::endl
 	;
     addScore(new HighScore(player, num_guesses));
+    } else {
+        // Sadness and output the amount of guesses required
+	    std::cout << "Too bad  :(  You finished after "
+		      << (guess_total)
+		      << " guesses!"
+		      << std::endl
+	    ;
+    }
+
+    // message outputting the total number of incorrect guesses made in one game
+    std::cout << "The answer was: " << this->magic_word << std::endl;
+    std::cout << "Total incorrect guesses: " << num_guesses - 1 << std::endl;
 
     return 0;
 
