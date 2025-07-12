@@ -15,8 +15,8 @@ private: // these variables and functions are only available to class members (a
 	int num_guesses;	// the number of guesses
 	int board_min;		// minimum incorrect guess
 	int board_max;		// maximum incorrect guess
-    std::string word_list[10] = {"EXTRAORDINARY", "DISAPPOINTMENT", "CAFFEINE", "MICHIGAN", "WOLVERINE", "DETROIT",
-         "SIGMA", "INTELLECTUAL", "ROBOTICS", "GRASS"}; // an assortment of words to guess from
+    std::string word_list[17] = {"EXTRAORDINARY", "DISAPPOINTMENT", "CAFFEINE", "MICHIGAN", "WOLVERINE", "DETROIT",
+         "SIGMA", "INTELLECTUAL", "ROBOTICS", "GRASS", "NEVER", "GONNA", "GIVE", "YOU", "UP", "LET", "DOWN"}; // an assortment of words to guess from
 	void updateScoreboard();
 	void askPlayAgain();
 
@@ -28,7 +28,7 @@ public: // these functions (usually not variables) are available to anyone
 	virtual void resetGame( ) override;
 	virtual void drawBoard() override;
 	virtual void getInput() override;
-	virtual bool addScore( HighScore ) override;
+	virtual bool addScore( HighScore* ) override;
 	virtual int  play( const Player& ) override;
 };
 

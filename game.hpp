@@ -1,12 +1,15 @@
-#include "highscore.hpp"
-#include "player.hpp"
 #ifndef CLASS_GAME
 #define CLASS_GAME
+
+#include "highscore.hpp"
+#include "player.hpp"
 
 class Game {
 private:
 	const static int boardsize = 10;
-	HighScore top10list[boardsize];
+	
+protected:
+	HighScore* top10list[boardsize];
 
 public:
 	// Vars
@@ -15,7 +18,7 @@ public:
 	virtual void drawBoard() = 0;
 	virtual void getInput() = 0;
 	/* returns true if in top 10 */
-	virtual bool addScore( HighScore newScore ) = 0;
+	virtual bool addScore( HighScore* newScore ) = 0;
 	virtual int play(const Player&) = 0;
 	virtual void resetGame() = 0;
 	void showScoreBoard();

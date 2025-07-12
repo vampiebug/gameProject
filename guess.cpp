@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 #include <random>
+#include <fstream>
 
 /* High score board and score function: Read from a high score file
 * (you are free to choose the specifics of file format, file name, etc.), and make the game read this file
@@ -24,7 +25,33 @@ Guess::Guess( ) : Game()
 	std::cout << "Constructor for Guess!" << std::endl;
 
 	// read the old scoreboard file here (NEED TO IMPLEMENT - TODO)
-	// populate the game's scoreboard object
+	//create a filestream to read, a string to store lines, and a tracker
+	std::fstream fin;
+	std::string line;
+	int i = 0;
+
+	//open the filestream as input
+	fin.open("guess_scores.txt", std::ios::in);
+
+
+
+	while (getline(fin, line) && i < 10){
+		//make sure this isn't a double delete
+		delete top10list[i];
+		//assign the value to the HighScore in the file converted to a HighScore object.
+		top10list[i] = new HighScore(Player(line.substr(0, line.find("\t"))), stoi(line.substr(line.find("\t")+1, std::string::npos)));
+		//incrementing is kind of important you know
+		i++;
+	}
+	//if that doesn't work:
+
+	//use a for loop going through the top10List
+	//use getline to read out the lines. look at project 1.
+	//assign these to the scoreboard starting at beginning
+	//if there are less than 10, initialize the rest to empty highscores. try not doing this and see what happens.
+
+	//close the filestream
+	fin.close();
 
 }
 
@@ -33,6 +60,26 @@ Guess::~Guess( )
 {
 	std::cout << "Destructor for Guess!" << std::endl;
 	// nothing to delete
+	//when game ends, re-adds records to file.
+
+	//create a filestream to write and string for scores.
+	std::fstream fout;
+
+	//open the filestream--trunc erases all its current contents.
+	fout.open("guess_scores.txt", std::ofstream::out | std::ofstream::trunc);
+
+
+	//for each in the top10list, write to the file. do this from best to worst score.
+	for (HighScore* score : top10list){
+		//write to file as toStr
+		//get the str of the score with toStr. Add an endline so getline can break it up.
+		fout<<score->toStr()<<std::endl;
+		//deallocate the object--this is actually done in game.
+		//delete score;
+	}
+
+	//close the filstream
+	fout.close();
 }
 
 // reset the game to the initial state
@@ -109,9 +156,51 @@ void Guess::getInput()
 }
 
 // needs to be implemented as part of the first task - TODO~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bool Guess::addScore( HighScore newScore )
+//adds scores after each round. 
+bool Guess::addScore( HighScore* newScore )
 {
-	return false;
+	//from toStr, get the score itself (the part after the tab)
+	//header.push_back(line.substr(0, line.find(',')));
+	//take the toStr of newScore. find the tab. One place forward will be the first digit. from there till the end will be the number. Convert that to an int.
+	
+	//std::cout<<"entered addScore"<<std::endl;
+	//std::cout<<"score: "<<newScore->toStr().substr(newScore->toStr().find('\t')+1, std::string::npos)<<std::endl;
+	int score = stoi(newScore->toStr().substr(newScore->toStr().find('\t')+1, std::string::npos));
+
+	//check that the newScore can at least work at the end of the list.
+	if (stoi(top10list[9]->toStr().substr(top10list[9]->toStr().find('\t')+1, std::string::npos)) < score && stoi(top10list[9]->toStr().substr(top10list[9]->toStr().find('\t')+1, std::string::npos)) != 0){
+		//is not in top 10 as score is greater than the tenth position and the tenth position is not 0 (default).
+		std::cout<<"Not in the top 10. Keep trying!"<<std::endl;
+		return false;
+	}
+	//std::cout<<"checked last score"<<std::endl;
+	
+	//if the new score is in the top 10, its value can be safely deleted. This is the only value that should be deleted: the rest will just be "passed back"
+	delete top10list[9];
+	//set the tracker
+	int i = 9;	
+	//starting at the end, check if that digit is greater than score. If it is, take the value of the prior value in the list.
+
+	while (i > 0){
+		//if the value is equal to 0 or greater than the value, just reassign and increment, then continue.
+
+		//std::cout<<i<<std::endl;
+		if (stoi(top10list[i-1]->toStr().substr(top10list[i-1]->toStr().find('\t')+1, std::string::npos)) == 0 || stoi(top10list[i-1]->toStr().substr(top10list[i-1]->toStr().find('\t')+1, std::string::npos)) > score){
+			//in the case of the end of the list, it will go from empty to the value of top10list[8]. Everything else just shifts over.
+			top10list[i] = top10list[i - 1];
+			//decrement and break out of the current iteration
+			i--;
+			continue;
+		}
+		else{
+			//std::cout<<"breaking out at position"<<i<<std::endl;
+			break;
+		}
+	}
+	//std::cout<<"iterated to position "<<i<<std::endl;
+	// i should now be the correct position to add the score
+	top10list[i] = newScore;
+	return true;
 }
 
 // handles the entire process of playing a single game
@@ -171,6 +260,8 @@ int Guess::play( const Player& player )
 		  << " guesses!"
 		  << std::endl
 	;
+	//add the score to the scoreboard
+	addScore(new HighScore(player, num_guesses));
 
 	return 0;
 }

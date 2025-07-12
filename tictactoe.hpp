@@ -27,7 +27,7 @@ public:
 	virtual void resetGame( ) override;
 	virtual void drawBoard() override;
 	virtual void getInput() override;
-	virtual bool addScore( HighScore newScore ) override;
+	virtual bool addScore( HighScore* newScore ) override;
 	virtual int  play( const Player& ) override;
 };
 

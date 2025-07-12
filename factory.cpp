@@ -29,28 +29,42 @@ Game* pickGame()
 			<< "4: Mastermind - guess a series of numbers until yours matches the secret combo!" << endl
 		;
 		cout << "Enter your choice here: ";
-		cin >> choice;
-
-		switch( choice )
+		if( cin >> choice ) // if the choice is valid
 		{
-			case 0: // We need to include the two new options from the menu into functionality here - TODO 
-				break;
-			case 1:
-				result = new TicTacToe();
-				break;
-			case 2:
-				result = new Guess();
-				break;
-			case 3:
-				result = new Hangman();
-				break;
-			case 4:
-				result = new Mastermind();
-				break;
-			default:
-				cout << "choice not recognized! choose again!" << endl;
-				choice = -1;
-				break;
+			// handle the choice
+			switch( choice )
+			{
+				case 0:
+					break;
+				case 1:
+					result = new TicTacToe();
+					break;
+				case 2:
+					result = new Guess();
+					break;
+				case 3:
+					result = new Hangman();
+					break;
+				case 4:
+					result = new Mastermind();
+					break;
+				default:
+					cout << "choice not recognized! choose again!" << endl;
+					choice = -1;
+					break;
+			}
+		}
+		else // if the choice is invalid, cin goes into a failed state and evaluates to false
+		{
+			//std::cout << std::cin.rdbuf();
+			// clear the errors, set choice to the default value
+			cin.clear();	// clear the errors
+			cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');	// flush the buffer (or else we read infinitely)
+			choice = -1;	// keep the loop condition going
+			//std::cout << std::cin.rdbuf();
+
+			//int i;
+			//cin >> i;
 		}
 	}
 

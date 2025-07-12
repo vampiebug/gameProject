@@ -99,7 +99,7 @@ void TicTacToe::getInput()
     this->lastInput = in;
 }
 
-bool TicTacToe::addScore( HighScore newScore )
+bool TicTacToe::addScore( HighScore* newScore )
 {
     cout << "adding score .. not supported for TicTacToe !" << endl;
     return false;
