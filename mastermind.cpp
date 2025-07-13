@@ -13,7 +13,7 @@
 Mastermind::Mastermind( ) : Game()
 {
 	
-	std::cout << "Constructor for Hangman!" << std::endl;
+	std::cout << "Constructor for Mastermind!" << std::endl;
 
 	// read the old scoreboard file here (NEED TO IMPLEMENT - TODO)
 	//create a filestream to read, a string to store lines, and a tracker
@@ -146,9 +146,27 @@ void Mastermind::drawBoard() //May not be in use~~~~~~~~
 
 // we don't use this one but it's part of the interface so we have to implement it
 //I mean we could just use it in play?
+//get guess and validate input--make sure it is within the correct range
 void Mastermind::getInput()
 {
-	return;
+	//reset guess to be empty
+    guess = "";
+    bool isValid = false;
+    //take input until guess is within the correct range. Must check that guess is a digit and is within range.
+    while (!isValid){
+        std::cin >> guess;
+        //truncates to only be the first value. Works bc max length is one digit.
+        guess = guess[0];
+        if (isdigit(guess[0])){
+            if (stoi(guess) >= this->board_min && stoi(guess) <=  this->board_max){
+                isValid = true;
+                continue;
+            }
+        }
+        std::cout<<"Input must be a number between "<<this->board_min<<" and "<<this->board_max<<std::endl;
+    }
+    
+    return;
 }
 
 // needs to be implemented as part of the first task - TODO~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,14 +239,14 @@ int Mastermind::play( const Player& player )
 
 
         //basically works the same as in the reset except takes user input. Need to clean this to make sure it's an int.
-        std::cin >> guess;
+        getInput();
         playerTower = Tower(stoi(guess));
         //assign the tracker to the address of the first REMOVED
         //playerBlocksTracker = &playerBlocksFirst;
         for (int i = 0; i < 2; i++){
             // ask the user for a guess and get it
 		    std::cout << "Enter your guess (between " << this->board_min << " and " << this->board_max << "): ";
-            std::cin >> guess;
+            getInput();
             //implement getInput and checking to make sure the input is in fact an int within range here
             playerTower.addToEnd(new Block(stoi(guess)));
         }
@@ -266,48 +284,48 @@ int Mastermind::play( const Player& player )
         // playerBlocksTracker = &playerBlocksFirst;
         // cpuTracker = &cpuFirst;
 
-    //need to reset the trackers before looping. See if there's a better way to do this. Maybe make the trackers part of the towers?
-    playerTracker = playerTower.startBlock;
-    cpuTracker = cpuTower.startBlock;
+        //need to reset the trackers before looping. See if there's a better way to do this. Maybe make the trackers part of the towers?
+        playerTracker = playerTower.startBlock;
+        cpuTracker = cpuTower.startBlock;
 
-    //On the last loop, playerBlocksTracker will be set equal to the next block for the last block in the list, which is nullptr.
-    while (playerTracker != nullptr){
-        if (playerTracker->data == cpuTracker->data){
-            std::cout << cpuTracker->data;
-            ++correct_guesses;
-            //break out of this iteration and update if reach print
+        //On the last loop, playerBlocksTracker will be set equal to the next block for the last block in the list, which is nullptr.
+        while (playerTracker != nullptr){
+            if (playerTracker->data == cpuTracker->data){
+                std::cout << cpuTracker->data;
+                ++correct_guesses;
+                //break out of this iteration and update if reach print
+                playerTracker = playerTracker->traverseDown();
+                cpuTracker = cpuTracker->traverseDown();
+                continue;
+            }
+            //otherwise:
+            //if the previous cpu data is safe to access and its data matches the current player guess, output an asterisk.
+            if (playerTracker->traverseUp() != nullptr){
+                if (playerTracker->data == cpuTracker->traverseUp()->data){
+                    std::cout<<"*";
+                    //break out of this iteration and update if reach print
+                    playerTracker = playerTracker->traverseDown();
+                    cpuTracker = cpuTracker->traverseDown(); 
+                    continue;
+                }
+            }
+            //if the prior cpu data is safe to access and its data matches the current player guess, output an asterisk.
+            //will have ended the iteration if already printed, so can use if instead of else if.
+            if (playerTracker->traverseDown() != nullptr){
+                if (playerTracker->data == cpuTracker->traverseDown()->data){
+                    std::cout<<"*";
+                    //break out of this iteration and update if reach print
+                    playerTracker = playerTracker->traverseDown();
+                    cpuTracker = cpuTracker->traverseDown(); 
+                    continue;
+                }
+            }
+            //if it's still in the loop, there is no match. Print x and increment.
+            std::cout << "X";
             playerTracker = playerTracker->traverseDown();
-            cpuTracker = cpuTracker->traverseDown();
-            continue;
+            cpuTracker = cpuTracker->traverseDown(); 
         }
-        //otherwise:
-        //if the previous cpu data is safe to access and its data matches the current player guess, output an asterisk.
-        if (playerTracker->traverseUp() != nullptr){
-            if (playerTracker->data == cpuTracker->traverseUp()->data){
-                std::cout<<"*";
-                //break out of this iteration and update if reach print
-                playerTracker = playerTracker->traverseDown();
-                cpuTracker = cpuTracker->traverseDown(); 
-                continue;
-            }
-        }
-        //if the prior cpu data is safe to access and its data matches the current player guess, output an asterisk.
-        //will have ended the iteration if already printed, so can use if instead of else if.
-        if (playerTracker->traverseDown() != nullptr){
-            if (playerTracker->data == cpuTracker->traverseDown()->data){
-                std::cout<<"*";
-                //break out of this iteration and update if reach print
-                playerTracker = playerTracker->traverseDown();
-                cpuTracker = cpuTracker->traverseDown(); 
-                continue;
-            }
-        }
-        //if it's still in the loop, there is no match. Print x and increment.
-        std::cout << "X";
-        playerTracker = playerTracker->traverseDown();
-        cpuTracker = cpuTracker->traverseDown(); 
-    }
-    std::cout << std::endl;
+        std::cout << std::endl;
         //Check if a node matches, will print out their response if so. If doesnt match, prints an 'X'
         // for(int i=0; i<3; ++i){
         //     if (headCPU->dataCPU != headPU->dataPU){
@@ -322,6 +340,7 @@ int Mastermind::play( const Player& player )
         if(correct_guesses == 3){
             user_guess = true;
         }
+        num_guesses++;
 
     }
     	// celebrate and output the amount of guesses required
@@ -335,92 +354,6 @@ int Mastermind::play( const Player& player )
 	return 0;
 }
 
-// we don't use this one but it's part of the interface so we have to implement it
-//I mean we could just use it in play?
-void Mastermind::getInput()
-{
-	return;
-}
-
-// needs to be implemented as part of the first task - TODO~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-// handles the entire process of playing a single game
-int Mastermind::play( const Player& player )
-{
-	// make sure everything is initialized
-	this->resetGame();
-	std::cout << "Welcome to Mastermind! You need to guess the combination of 3 digits (may repeat) between 1 - 6" << std::endl;
-    std::cout << "Guesses that earn a 'X' mean the guess is completely wrong. An '*' means the guess is not in the right spot.";
-    std::cout << "Seeing the guessed number means it is correct and in the correct spot!" << std::endl;
 
-	while( user_guess != true )
-	{
-		// clear the screen --note: this causes some issues, as it hides the previous guess before it can be seen
-		//resetScreen();
-		//std::cout << "Guess the number combination!" << std::endl; dont need this since we shouldnt reset the screen
-
-        //basically works the same as in the reset except takes user input. Need to clean this to make sure it's an int.
-        std::cout << "Enter your guess (between " << this->board_min << " and " << this->board_max << "): ";
-        std::cin >> guess;
-        playerTower = Tower(stoi(guess));
-
-        //assign the tracker to the address of the first REMOVED
-        //playerBlocksTracker = &playerBlocksFirst;
-
-        for (int i = 0; i < 2; i++){
-            // ask the user for a guess and get it
-		    std::cout << "Enter your guess (between " << this->board_min << " and " << this->board_max << "): ";
-            std::cin >> guess;
-            //implement getInput and checking to make sure the input is in fact an int within range here
-            playerTower.addToEnd(new Block(stoi(guess)));
-        }
-
-        //std::cout << cpuTower.startBlock->data << std::endl;
-        //std::cout << cpuTower.startBlock->traverseDown()->data << std::endl;
-        //std::cout << cpuTower.startBlock->traverseDown()->traverseDown()->data << std::endl;
-        //std::cout << playerTower.startBlock->data << std::endl;
-        //std::cout << playerTower.startBlock->traverseDown()->data << std::endl;
-        //std::cout << playerTower.startBlock->traverseDown()->traverseDown()->data << std::endl;
-
-        // draw the board on the screen (the combination hints)
-		this->drawBoard();
-
-
-        // // Initialize the head of the list
-        // Pu* headPU = nullptr;
-        // // Create new nodes and add them to the list
-        // for (int i = 1; i <= 3; i++) {
-        //     Pu* newNodePU = new Pu();
-        //     std::cin >> newNodePU->dataPU; // Player choses number from 1-6, can be repeated numbers
-        //     newNodePU->nextPU = nullptr;
-        
-        //     // Link the nodes
-        //     if (headPU == nullptr) {
-        //         headPU = newNodePU;
-        //     }
-        //     else {
-        //         // The list is not empty, traverse the list to find the last node
-        //         Pu* tempP = headPU;
-        //         while (tempP->nextPU != nullptr) {
-        //             tempP = tempP->nextPU;
-        //         }
-        //         tempP->nextPU = newNodePU;
-        //     }
-        // }
-
-        // increment the number of guesses
-	    this->num_guesses ++;
-
-    }
-
-	// celebrate and output the amount of guesses required
-	std::cout << "Good job! You figured out the combination after only "
-		  << this->num_guesses
-		  << " guesses!"
-		  << std::endl
-        ;
-    addScore(new HighScore(player, num_guesses));
-
-	return 0;
-}
