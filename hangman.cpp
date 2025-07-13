@@ -74,6 +74,28 @@ Hangman::~Hangman( )
 // we don't use this one but it's part of the interface so we have to implement it
 void Hangman::getInput()
 {
+    //reset guess to be empty
+    user_guess = "";
+    bool isValid = false;
+    //take input until guess is within the correct range. Must check that guess is an alphabetic letter.
+    while (!isValid){
+        std::cin >> user_guess;
+
+        //truncates to only be the first value. Works bc max length is one digit.
+        if (!isdigit(user_guess[0])){
+            if (isalpha(user_guess[0])){
+                isValid = true;
+                // Changes lower case letters to upper case
+                char guess_letter = user_guess[0];
+                if( islower(guess_letter) ){
+                    transform(user_guess.begin(), user_guess.end(), user_guess.begin(), ::toupper);
+                }
+                continue;
+            }
+        }
+        std::cout << "Input must be a letter." << std::endl;
+    }
+    
     return;
 }
 
@@ -316,15 +338,10 @@ int Hangman::play( const Player& player )
         // draw the board on the screen
         this->drawBoard();
 
-        user_guess = ""; // reset the storage for the user's guess
+        //user_guess = ""; // reset the storage for the user's guess
         // ask the user for a guess and get it
         std::cout << "Enter your guess (between A - Z): "; //Should we give vowels to the player when they start playing?
-        std::cin >> user_guess;
-
-        char guess_letter = user_guess[0];
-        if( islower(guess_letter) ){
-            transform(user_guess.begin(), user_guess.end(), user_guess.begin(), ::toupper);
-        }
+        getInput();
 
         // counts the total number of guesses made overall in the game
         guess_total = guess_total+1;
