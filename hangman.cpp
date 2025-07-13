@@ -71,7 +71,8 @@ Hangman::~Hangman( )
 	fout.close();
 }
 
-// we don't use this one but it's part of the interface so we have to implement it
+// Gets the input (guessed letter) and checks if it is valid.
+// Input and output is nothing
 void Hangman::getInput()
 {
     //reset guess to be empty
@@ -105,11 +106,8 @@ void Hangman::getInput()
 bool Hangman::addScore( HighScore* newScore )
 {
 //from toStr, get the score itself (the part after the tab)
-	//header.push_back(line.substr(0, line.find(',')));
 	//take the toStr of newScore. find the tab. One place forward will be the first digit. from there till the end will be the number. Convert that to an int.
 	
-	//std::cout<<"entered addScore"<<std::endl;
-	//std::cout<<"score: "<<newScore->toStr().substr(newScore->toStr().find('\t')+1, std::string::npos)<<std::endl;
 	int score = stoi(newScore->toStr().substr(newScore->toStr().find('\t')+1, std::string::npos));
 
 	//check that the newScore can at least work at the end of the list.
@@ -118,7 +116,6 @@ bool Hangman::addScore( HighScore* newScore )
 		std::cout<<"Not in the top 10. Keep trying!"<<std::endl;
 		return false;
 	}
-	//std::cout<<"checked last score"<<std::endl;
 	
 	//if the new score is in the top 10, its value can be safely deleted. This is the only value that should be deleted: the rest will just be "passed back"
 	delete top10list[9];
@@ -129,7 +126,6 @@ bool Hangman::addScore( HighScore* newScore )
 	while (i > 0){
 		//if the value is equal to 0 or greater than the value, just reassign and increment, then continue.
 
-		//std::cout<<i<<std::endl;
 		if (stoi(top10list[i-1]->toStr().substr(top10list[i-1]->toStr().find('\t')+1, std::string::npos)) == 0 || stoi(top10list[i-1]->toStr().substr(top10list[i-1]->toStr().find('\t')+1, std::string::npos)) > score){
 			//in the case of the end of the list, it will go from empty to the value of top10list[8]. Everything else just shifts over.
 			top10list[i] = top10list[i - 1];
@@ -138,11 +134,9 @@ bool Hangman::addScore( HighScore* newScore )
 			continue;
 		}
 		else{
-			//std::cout<<"breaking out at position"<<i<<std::endl;
 			break;
 		}
 	}
-	//std::cout<<"iterated to position "<<i<<std::endl;
 	// i should now be the correct position to add the score
 	top10list[i] = newScore;
 	return true;
@@ -168,12 +162,11 @@ void Hangman::resetGame( ){
     this->correct_letter = 0;
     this->guess_total = 0;
 
+    // Initialize deque with placeholders for user to know how many letters are in the word
     std::cout << guesses.size() << std::endl;
     for(auto i = 0; i < this->magic_word.length(); i++){
-        //std::cout << "entered loop" << std::endl;
-        //std::cout << guesses[i] << std::endl;
         guesses.push_back("_");
-        std::cout << guesses[i] << std::endl;
+        
     }
 
 
@@ -182,7 +175,7 @@ void Hangman::resetGame( ){
 // draw the board on the screen in its current state
 void Hangman::drawBoard(){
 
-        // need to reset if the guess was correct this time
+    // need to reset if the guess was correct this time
     bool correct_guess = false;
 
     // Check if any letters have been correctly guessed and print out word line
@@ -340,7 +333,6 @@ int Hangman::play( const Player& player )
         // draw the board on the screen
         this->drawBoard();
 
-        //user_guess = ""; // reset the storage for the user's guess
         // ask the user for a guess and get it
         std::cout << "Enter your guess (between A - Z): "; //Should we give vowels to the player when they start playing?
         getInput();
@@ -374,16 +366,17 @@ int Hangman::play( const Player& player )
     } else {
         // Sadness and output the amount of guesses required
         std::cout << "Too bad  :(  You finished after "
-        << (guess_total)
+        << (guess_total-1)
         << " guesses!"
         << std::endl
         ;
-        std::cout << "Total incorrect guesses: " << num_guesses + 1<< std::endl;
+        std::cout << "Total incorrect guesses: " << num_guesses << std::endl;
     }
 
     // message outputting the total number of incorrect guesses made in one game
     std::cout << "The answer was: " << this->magic_word << std::endl;
 
+    // Clear the guessed word deque for the next game
     while (!guesses.empty())
     {
         guesses.pop_back();
