@@ -160,11 +160,7 @@ void Guess::getInput()
 bool Guess::addScore( HighScore* newScore )
 {
 	//from toStr, get the score itself (the part after the tab)
-	//header.push_back(line.substr(0, line.find(',')));
 	//take the toStr of newScore. find the tab. One place forward will be the first digit. from there till the end will be the number. Convert that to an int.
-	
-	//std::cout<<"entered addScore"<<std::endl;
-	//std::cout<<"score: "<<newScore->toStr().substr(newScore->toStr().find('\t')+1, std::string::npos)<<std::endl;
 	int score = stoi(newScore->toStr().substr(newScore->toStr().find('\t')+1, std::string::npos));
 
 	//check that the newScore can at least work at the end of the list.
@@ -173,7 +169,6 @@ bool Guess::addScore( HighScore* newScore )
 		std::cout<<"Not in the top 10. Keep trying!"<<std::endl;
 		return false;
 	}
-	//std::cout<<"checked last score"<<std::endl;
 	
 	//if the new score is in the top 10, its value can be safely deleted. This is the only value that should be deleted: the rest will just be "passed back"
 	delete top10list[9];
@@ -183,8 +178,6 @@ bool Guess::addScore( HighScore* newScore )
 
 	while (i > 0){
 		//if the value is equal to 0 or greater than the value, just reassign and increment, then continue.
-
-		//std::cout<<i<<std::endl;
 		if (stoi(top10list[i-1]->toStr().substr(top10list[i-1]->toStr().find('\t')+1, std::string::npos)) == 0 || stoi(top10list[i-1]->toStr().substr(top10list[i-1]->toStr().find('\t')+1, std::string::npos)) > score){
 			//in the case of the end of the list, it will go from empty to the value of top10list[8]. Everything else just shifts over.
 			top10list[i] = top10list[i - 1];
@@ -193,11 +186,9 @@ bool Guess::addScore( HighScore* newScore )
 			continue;
 		}
 		else{
-			//std::cout<<"breaking out at position"<<i<<std::endl;
 			break;
 		}
 	}
-	//std::cout<<"iterated to position "<<i<<std::endl;
 	// i should now be the correct position to add the score
 	top10list[i] = newScore;
 	return true;

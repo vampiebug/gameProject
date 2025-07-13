@@ -10,6 +10,9 @@
 #include <fstream>
 
 // default constructor
+//REQUIRES: a valid mastermind_scores.txt object
+//MODIFIES: top10list
+//EFFECTS: creates a new game of mastermind
 Mastermind::Mastermind( ) : Game()
 {
 	
@@ -34,12 +37,6 @@ Mastermind::Mastermind( ) : Game()
 		//incrementing is kind of important you know
 		i++;
 	}
-	//if that doesn't work:
-
-	//use a for loop going through the top10List
-	//use getline to read out the lines. look at project 1.
-	//assign these to the scoreboard starting at beginning
-	//if there are less than 10, initialize the rest to empty highscores. try not doing this and see what happens.
 
 	//close the filestream
 	fin.close();
@@ -47,6 +44,9 @@ Mastermind::Mastermind( ) : Game()
 }
 
 // destructor
+//REQUIRES: a valid mastermind_scores.txt object
+//MODIFIES: the mastermind_scores.txt object
+//EFFECTS: deletes the current game of mastermind.
 Mastermind::~Mastermind( )
 {
 	std::cout << "Destructor for Mastermind!" << std::endl;
@@ -65,8 +65,6 @@ Mastermind::~Mastermind( )
 		//write to file as toStr
 		//get the str of the score with toStr. Add an endline so getline can break it up.
 		fout<<score->toStr()<<std::endl;
-		//deallocate the object--this is actually done in game.
-		//delete score;
 	}
 
 	//close the filstream
@@ -74,6 +72,9 @@ Mastermind::~Mastermind( )
 }
 
 // reset the game to the initial state
+//REQUIRES: a valid mastermind game object
+//MODIFIFES: the CPU Tower, num_guesses, user_guess
+//EFFECTS: reset the variables that need to be reset before each game.
 void Mastermind::resetGame( )
 {
 	// seed the time to the random library
@@ -87,49 +88,17 @@ void Mastermind::resetGame( )
     //reset the flag for the user's guess
     user_guess = false;
 
-    // Initialize the head of the list
-    //Cpu* headCPU = nullptr;
-    // Create new nodes and add them to the list
-    //again, I think this would be easily scalable.
-
 
     //I think this should do the same as your for-loop below. Also, the game seems very scalable--maybe we can do that if we have time?
     //create a new block with a random data value as the first in the list.
     cpuTower = Tower(rand() %5+1);
-    //assign the tracker to the address of the first (REMOVED)
-    //cpuTracker = &cpuFirst;
     //assign the next ones
     for (int i = 0; i<2; i++){
         cpuTower.addToEnd(new Block(rand() %5+1));
     }
-
-
-     
-    // for (int i = 1; i <= 3; i++) {
-    //     Cpu* newNodeCPU = new Cpu();
-    //     newNodeCPU->dataCPU = rand() %5+1; // Choses random number from 1-6, can be repeated numbers
-    //     newNodeCPU->nextCPU = nullptr;
-
-    //     // Link the nodes
-    //     if (newNodeCPU->headCPU == nullptr) {
-    //         // The list is empty, so the new node is the
-    //         // head of the list
-    //         newNodeCPU->headCPU = newNodeCPU;
-    //     }
-    //     else {
-    //         // The list is not empty, traverse the list to find the last node
-    //         Cpu* temp = newNodeCPU->headCPU;
-    //         while (temp->nextCPU != nullptr) {
-    //             temp = temp->nextCPU;
-    //         }
-    //         // Now temp points to the last node, link the new node
-    //         temp->nextCPU = newNodeCPU;
-    //     }
-
-    // }
 }
 
-// draw the board on the screen in its current state
+// draw the board on the screen in its current state. Not used.
 void Mastermind::drawBoard() //May not be in use~~~~~~~~
 {
     const std::string RED = "\033[31m";
@@ -144,9 +113,8 @@ void Mastermind::drawBoard() //May not be in use~~~~~~~~
 
 }
 
-// we don't use this one but it's part of the interface so we have to implement it
-//I mean we could just use it in play?
-//get guess and validate input--make sure it is within the correct range
+//EFFECTS: Get input until a valid numerical input is given.
+//MODIFIES: guess variable (string)
 void Mastermind::getInput()
 {
 	//reset guess to be empty
@@ -170,14 +138,14 @@ void Mastermind::getInput()
 }
 
 // needs to be implemented as part of the first task - TODO~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//REQUIRES: a new Highscore object created with the game's current player and their score at the end of the game.
+//MODIFIES: top10list (array of HighScores)
+//EFFECTS: updates the top10list to include the current score, lowest score to highest (lower score: higher rank)
 bool Mastermind::addScore( HighScore* newScore )
 {
 	//from toStr, get the score itself (the part after the tab)
 	//header.push_back(line.substr(0, line.find(',')));
 	//take the toStr of newScore. find the tab. One place forward will be the first digit. from there till the end will be the number. Convert that to an int.
-	
-	//std::cout<<"entered addScore"<<std::endl;
-	//std::cout<<"score: "<<newScore->toStr().substr(newScore->toStr().find('\t')+1, std::string::npos)<<std::endl;
 	int score = stoi(newScore->toStr().substr(newScore->toStr().find('\t')+1, std::string::npos));
 
 	//check that the newScore can at least work at the end of the list.
@@ -186,18 +154,16 @@ bool Mastermind::addScore( HighScore* newScore )
 		std::cout<<"Not in the top 10. Keep trying!"<<std::endl;
 		return false;
 	}
-	//std::cout<<"checked last score"<<std::endl;
 	
 	//if the new score is in the top 10, its value can be safely deleted. This is the only value that should be deleted: the rest will just be "passed back"
 	delete top10list[9];
 	//set the tracker
 	int i = 9;	
-	//starting at the end, check if that digit is greater than score. If it is, take the value of the prior value in the list.
 
+	//starting at the end, check if that digit is greater than score. If it is, take the value of the prior value in the list.
 	while (i > 0){
 		//if the value is equal to 0 or greater than the value, just reassign and increment, then continue.
 
-		//std::cout<<i<<std::endl;
 		if (stoi(top10list[i-1]->toStr().substr(top10list[i-1]->toStr().find('\t')+1, std::string::npos)) == 0 || stoi(top10list[i-1]->toStr().substr(top10list[i-1]->toStr().find('\t')+1, std::string::npos)) > score){
 			//in the case of the end of the list, it will go from empty to the value of top10list[8]. Everything else just shifts over.
 			top10list[i] = top10list[i - 1];
@@ -206,17 +172,18 @@ bool Mastermind::addScore( HighScore* newScore )
 			continue;
 		}
 		else{
-			//std::cout<<"breaking out at position"<<i<<std::endl;
 			break;
 		}
 	}
-	//std::cout<<"iterated to position "<<i<<std::endl;
 	// i should now be the correct position to add the score
 	top10list[i] = newScore;
 	return true;
 }
 
 // handles the entire process of playing a single game
+//REQUIRES: the current player object
+//MODIFIFES: the Player and CPU Towers, num_guesses, Player and CPU Trackers, user_guess
+//EFFECTS: Play the game, and update the scoreboard at the end
 int Mastermind::play( const Player& player )
 {
 	// make sure everything is initialized
@@ -228,63 +195,26 @@ int Mastermind::play( const Player& player )
 		//resetScreen();
 		std::cout << "Guess the number combination!" << std::endl;
 
-		// draw the board on the screen
-		//this->drawBoard();
+
         user_guess = false;
 
 		// ask the user for a guess and get it
 		std::cout << "Enter your guess (between " << this->board_min << " and " << this->board_max << "): ";
 		
 
-
-
-        //basically works the same as in the reset except takes user input. Need to clean this to make sure it's an int.
         getInput();
         playerTower = Tower(stoi(guess));
-        //assign the tracker to the address of the first REMOVED
-        //playerBlocksTracker = &playerBlocksFirst;
         for (int i = 0; i < 2; i++){
             // ask the user for a guess and get it
 		    std::cout << "Enter your guess (between " << this->board_min << " and " << this->board_max << "): ";
             getInput();
-            //implement getInput and checking to make sure the input is in fact an int within range here
             playerTower.addToEnd(new Block(stoi(guess)));
         }
-        // std::cout<<cpuTower.startBlock->data<<std::endl;
-        // std::cout<<cpuTower.startBlock->traverseDown()->data<<std::endl;
-        // std::cout<<cpuTower.startBlock->traverseDown()->traverseDown()->data<<std::endl;
-        // std::cout<<playerTower.startBlock->data<<std::endl;
-        // std::cout<<playerTower.startBlock->traverseDown()->data<<std::endl;
-        // std::cout<<playerTower.startBlock->traverseDown()->traverseDown()->data<<std::endl;
-
-        // // Initialize the head of the list
-        // Pu* headPU = nullptr;
-        // // Create new nodes and add them to the list
-        // for (int i = 1; i <= 3; i++) {
-        //     Pu* newNodePU = new Pu();
-        //     std::cin >> newNodePU->dataPU; // Player choses number from 1-6, can be repeated numbers
-        //     newNodePU->nextPU = nullptr;
-        
-        //     // Link the nodes
-        //     if (headPU == nullptr) {
-        //         headPU = newNodePU;
-        //     }
-        //     else {
-        //         // The list is not empty, traverse the list to find the last node
-        //         Pu* tempP = headPU;
-        //         while (tempP->nextPU != nullptr) {
-        //             tempP = tempP->nextPU;
-        //         }
-        //         tempP->nextPU = newNodePU;
-        //     }
-        // }
         
         int correct_guesses = 0;
         //probably need to reset both trackers back to the head. REMOVED
-        // playerBlocksTracker = &playerBlocksFirst;
-        // cpuTracker = &cpuFirst;
 
-        //need to reset the trackers before looping. See if there's a better way to do this. Maybe make the trackers part of the towers?
+        //need to reset the trackers before looping. 
         playerTracker = playerTower.startBlock;
         cpuTracker = cpuTower.startBlock;
 
@@ -326,16 +256,6 @@ int Mastermind::play( const Player& player )
             cpuTracker = cpuTracker->traverseDown(); 
         }
         std::cout << std::endl;
-        //Check if a node matches, will print out their response if so. If doesnt match, prints an 'X'
-        // for(int i=0; i<3; ++i){
-        //     if (headCPU->dataCPU != headPU->dataPU){
-        //         std::cout << "X";
-        //     }
-        //     else if(headCPU->dataCPU == headPU->dataPU){
-        //         std::cout << headCPU->dataCPU << std::endl;
-        //         ++correct_guesses;
-        //     }
-        // }
         
         if(correct_guesses == 3){
             user_guess = true;
@@ -343,7 +263,7 @@ int Mastermind::play( const Player& player )
         num_guesses++;
 
     }
-    	// celebrate and output the amount of guesses required
+    // celebrate and output the amount of guesses required
 	std::cout << "Good job! You figured out the combination after only "
 		  << this->num_guesses
 		  << " guesses!"
