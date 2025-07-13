@@ -160,7 +160,8 @@ void Hangman::resetGame( ){
     this->magic_word = word_list[RandIndex];
 
     // reset number of guesses and board min/max
-    this->num_guesses = 0;
+    //setting this to -1 means that when the loop is run for the first time, and no value is found because it's just drawing the gallows, it will automatically show first state.
+    this->num_guesses = -1;
     this->guess_total = 0;
     this->user_guess = "";
     this->guesses_string = "";
@@ -168,8 +169,9 @@ void Hangman::resetGame( ){
     this->guess_total = 0;
 
     std::cout << guesses.size() << std::endl;
-    for(size_t i = 0; i < this->magic_word.size(); i++){
-        std::cout << guesses[i] << std::endl;
+    for(auto i = 0; i < this->magic_word.length(); i++){
+        //std::cout << "entered loop" << std::endl;
+        //std::cout << guesses[i] << std::endl;
         guesses.push_back("_");
         std::cout << guesses[i] << std::endl;
     }
@@ -180,6 +182,37 @@ void Hangman::resetGame( ){
 // draw the board on the screen in its current state
 void Hangman::drawBoard(){
 
+        // need to reset if the guess was correct this time
+    bool correct_guess = false;
+
+    // Check if any letters have been correctly guessed and print out word line
+    for (size_t i = 0; i < this->magic_word.size(); ++i) {
+        char letter = magic_word[i];
+        char guess_letter = user_guess[0];
+        if (letter == guess_letter){
+            guesses[i] = letter;
+            correct_guess = true;
+            correct_letter = correct_letter+1;
+        }
+
+    }
+
+    // outputs all of the correct letters and placeholders for letters to be guessed
+    for(size_t i=0; i<this->magic_word.size(); ++i){
+        std::cout<< guesses[i];
+    }
+    std::cout<< std::endl;
+
+    // counts if an incorrect guess was made, since no correct guess was made
+    if(!correct_guess){
+       this->num_guesses = this->num_guesses+1;
+    }
+
+    // assembles a string word from the deque storing all the user's guesses
+    guesses_string = "";
+    for (size_t i =0; i < guesses.size(); i++){
+        guesses_string += guesses[i];
+    }
     // Build the gallow
     //don't you usually only add a body part for an incorrect guess?
     if (this->num_guesses == 0){ // To initialize the gallow
@@ -289,37 +322,6 @@ void Hangman::drawBoard(){
     std::cout << "####################" << std::endl;
     }
 
-    // need to reset if the guess was correct this time
-    int correct_guess = 0;
-
-    // Check if any letters have been correctly guessed and print out word line
-    for (size_t i = 0; i < this->magic_word.size(); ++i) {
-        char letter = magic_word[i];
-        char guess_letter = user_guess[0];
-        if (letter == guess_letter){
-            guesses[i] = letter;
-            correct_guess = correct_guess+1;
-            correct_letter = correct_letter+1;
-        }
-
-    }
-
-    // outputs all of the correct letters and placeholders for letters to be guessed
-    for(size_t i=0; i<this->magic_word.size(); ++i){
-        std::cout<< guesses[i];
-    }
-    std::cout<< std::endl;
-
-    // counts if an incorrect guess was made, since no correct guess was made
-    if( correct_guess == 0){
-       this->num_guesses = this->num_guesses+1;
-    }
-
-    // assembles a string word from the deque storing all the user's guesses
-    guesses_string = "";
-    for (size_t i =0; i < guesses.size(); i++){
-        guesses_string += guesses[i];
-    }
 
 }
 
@@ -366,8 +368,8 @@ int Hangman::play( const Player& player )
         << std::endl
         ;
         //do the addscore--only adds if get it right/win
-        addScore(new HighScore(player, num_guesses-1));
-        std::cout << "Total incorrect guesses: " << num_guesses - 1 << std::endl;
+        addScore(new HighScore(player, num_guesses));
+        std::cout << "Total incorrect guesses: " << num_guesses << std::endl;
 
     } else {
         // Sadness and output the amount of guesses required
@@ -376,7 +378,7 @@ int Hangman::play( const Player& player )
         << " guesses!"
         << std::endl
         ;
-        std::cout << "Total incorrect guesses: " << num_guesses << std::endl;
+        std::cout << "Total incorrect guesses: " << num_guesses + 1<< std::endl;
     }
 
     // message outputting the total number of incorrect guesses made in one game
