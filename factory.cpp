@@ -5,6 +5,8 @@
 #include "hangman.hpp"
 #include "mastermind.hpp"
 
+#include <limits>
+
 using namespace std;
 
 // This is a "factory" function.

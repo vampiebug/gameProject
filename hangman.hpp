@@ -17,7 +17,7 @@ private: // these variables and functions are only available to class members (a
 	int board_min;		// minimum incorrect guess
 	int board_max;		// maximum incorrect guess
     std::string word_list[17] = {"EXTRAORDINARY", "DISAPPOINTMENT", "CAFFEINE", "MICHIGAN", "WOLVERINE", "DETROIT",
-         "SIGMA", "INTELLECTUAL", "ROBOTICS", "GRASS", "NEVER", "GONNA", "GIVE", "YOU", "UP", "LET", "DOWN"}; // an assortment of words to guess from
+        "SIGMA", "INTELLECTUAL", "ROBOTICS", "GRASS", "NEVER", "GONNA", "GIVE", "YOU", "UP", "LET", "DOWN"}; // an assortment of words to guess from
 	std::deque<std::string> guesses; // Stores all the correctly guessed letters and placeholders from the game
 	std::string guesses_string; // is a string of the the deque (all the letters are in one string)
 	int correct_letter; // counter for correct letters guessed throughout one full game
